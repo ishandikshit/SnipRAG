@@ -1,0 +1,40 @@
+SnipRAG Architecture Description
+
+The architecture of SnipRAG consists of the following components:
+
+1. PDF Processing Pipeline:
+   - Input: PDF document
+   - Text Extraction with coordinates
+   - Page Image Rendering
+   - Text Chunk Creation
+   - Text Embedding Generation
+   - Vector Index Storage
+
+2. Search Pipeline:
+   - Input: Natural language query
+   - Query Embedding Generation
+   - Semantic Search in Vector Index
+   - Result Ranking
+   - Coordinate Mapping
+   - Image Snippet Extraction
+   - Result Assembly
+
+3. Key Components:
+   - PDF Processor (PyMuPDF)
+   - Text Embedder (Sentence-Transformers)
+   - Vector Database (FAISS)
+   - Coordinate Mapper
+   - Image Snipper
+   - Result Formatter
+
+4. Data Flow:
+   - PDF → Text Blocks with Coordinates → Text Chunks → Text Embeddings → Vector Index
+   - Query → Query Embedding → Vector Search → Matching Text → Coordinate Lookup → Image Snippet Extraction → Final Results
+
+The key innovation is the precise mapping between semantic text matches and their visual location in the document, allowing for targeted image snippet extraction.
+
+Visual representation should show:
+- The flow from PDF to text+coordinates to embeddings to search results
+- The parallel storage of page images for later snippet extraction
+- The connection between text matches and their corresponding image regions
+- The final results showing both text and image snippets 
