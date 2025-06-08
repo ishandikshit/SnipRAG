@@ -10,7 +10,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="sniprag",
-    version="0.1.0",
+    version="0.2.0",
     author="Ishan Dikshit",
     author_email="ishan.dikshit@example.com",
     description="Retrieval Augmented Generation with Image Snippets from PDFs",
@@ -48,6 +48,13 @@ setup(
         ],
         "viz": [
             "matplotlib>=3.5.0",
+        ],
+        "ocr": [
+            "pytesseract>=0.3.10",
+        ],
+        "all": [
+            "matplotlib>=3.5.0",
+            "pytesseract>=0.3.10",
         ],
     },
 ) 
