@@ -89,7 +89,7 @@ Here are some examples of SnipRAG in action, showing how it extracts image snipp
 
 **Query:** "quarterly financial performance table"
 
-![Financial Table Snippet](docs/examples/financial_table_snippet.png)
+![Financial Table Snippet](docs/examples/financial_table_snippet.png?v=1)
 
 *SnipRAG preserves the entire table structure, making it possible to understand relationships between rows and columns that would be lost in text-only extraction.*
 
@@ -97,7 +97,7 @@ Here are some examples of SnipRAG in action, showing how it extracts image snipp
 
 **Query:** "Q2 2022 revenue"
 
-![Q2 Revenue Snippet](docs/examples/q2_revenue_snippet.png)
+![Q2 Revenue Snippet](docs/examples/q2_revenue_snippet.png?v=1)
 
 *When searching for specific data points within tables, SnipRAG extracts not just the matching cell but also the surrounding context, showing related row and column data.*
 
@@ -105,7 +105,7 @@ Here are some examples of SnipRAG in action, showing how it extracts image snipp
 
 **Query:** "total profit"
 
-![Total Profit Snippet](docs/examples/total_profit_snippet.png)
+![Total Profit Snippet](docs/examples/total_profit_snippet.png?v=1)
 
 *For financial documents, seeing the numbers in their original tabular format provides critical context that would be lost in pure text extraction.*
 
@@ -113,7 +113,7 @@ Here are some examples of SnipRAG in action, showing how it extracts image snipp
 
 **Query:** "technical components comparison"
 
-![Technical Comparison Snippet](docs/examples/tech_comparison_snippet.png)
+![Technical Comparison Snippet](docs/examples/tech_comparison_snippet.png?v=1)
 
 *Complex comparison tables maintain their structure in the extracted snippets, making it easier to understand the relationships between different items.*
 
