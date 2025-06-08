@@ -22,6 +22,9 @@ SnipRAG is a specialized Retrieval Augmented Generation (RAG) system that not on
 
 ### From PyPI
 
+> ⚠️ **Note**: This package is not yet available on PyPI. Please use the source installation method below.
+
+In the future, once published to PyPI:
 ```bash
 pip install sniprag
 ```
@@ -29,8 +32,8 @@ pip install sniprag
 ### From Source
 
 ```bash
-git clone https://github.com/yourusername/sniprag.git
-cd sniprag
+git clone https://github.com/ishandikshit/SnipRAG.git
+cd SnipRAG
 pip install -e .
 ```
 
