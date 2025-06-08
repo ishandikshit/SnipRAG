@@ -47,10 +47,10 @@ def main():
     # Define example queries for tabular data and output filenames
     examples = [
         ("quarterly financial performance table", "docs/examples/financial_table_snippet.png", 40),
-        ("Q2 2022 revenue", "docs/examples/q2_revenue_snippet.png", 20),
-        ("total profit", "docs/examples/total_profit_snippet.png", 20),
-        ("technical components comparison", "docs/examples/tech_comparison_snippet.png", 40),
-        ("semantic search method", "docs/examples/semantic_search_snippet.png", 20)
+        ("Q2 2022 revenue", "docs/examples/q2_revenue_snippet.png", 120),
+        ("total profit", "docs/examples/total_profit_snippet.png", 120),
+        ("technical components comparison", "docs/examples/tech_comparison_snippet.png", 140),
+        ("semantic search method", "docs/examples/semantic_search_snippet.png", 120)
     ]
     
     # Generate and save snippets for each example
