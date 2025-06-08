@@ -2,6 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![PyPI version](https://badge.fury.io/py/sniprag.svg)](https://badge.fury.io/py/sniprag)
 
 SnipRAG is a specialized Retrieval Augmented Generation (RAG) system that not only finds semantically relevant text in PDF documents but also extracts precise image snippets from the areas containing the matching text.
 
@@ -22,11 +23,14 @@ SnipRAG is a specialized Retrieval Augmented Generation (RAG) system that not on
 
 ### From PyPI
 
-> ⚠️ **Note**: This package is not yet available on PyPI. Please use the source installation method below.
-
-In the future, once published to PyPI:
 ```bash
 pip install sniprag
+```
+
+For visualization support (recommended for demos):
+
+```bash
+pip install sniprag[viz]
 ```
 
 ### From Source
@@ -35,12 +39,6 @@ pip install sniprag
 git clone https://github.com/ishandikshit/SnipRAG.git
 cd SnipRAG
 pip install -e .
-```
-
-For visualization support (recommended for demos):
-
-```bash
-pip install -e ".[viz]"
 ```
 
 ### From GitHub
