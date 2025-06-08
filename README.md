@@ -85,29 +85,37 @@ for result in results:
 
 Here are some examples of SnipRAG in action, showing how it extracts image snippets from PDF documents based on semantic search queries:
 
-### Financial Data Extraction
+### Structured Table Extraction
 
-**Query:** "What is the total revenue?"
+**Query:** "quarterly financial performance table"
 
-![Revenue Snippet](docs/examples/revenue_snippet.png)
+![Financial Table Snippet](docs/examples/financial_table_snippet.png)
 
-*SnipRAG extracts the exact region containing revenue information, providing visual context alongside the text match.*
+*SnipRAG preserves the entire table structure, making it possible to understand relationships between rows and columns that would be lost in text-only extraction.*
 
-### Technical Specification Extraction
+### Specific Table Cell Data
 
-**Query:** "How does the system implement semantic search?"
+**Query:** "Q2 2022 revenue"
 
-![Semantic Search Snippet](docs/examples/semantic_search_snippet.png)
+![Q2 Revenue Snippet](docs/examples/q2_revenue_snippet.png)
 
-*When searching for technical details, SnipRAG locates and extracts the relevant section, preserving formatting and visual context.*
+*When searching for specific data points within tables, SnipRAG extracts not just the matching cell but also the surrounding context, showing related row and column data.*
 
-### Document Navigation
+### Financial Data with Context
 
-**Query:** "Show me the introduction section"
+**Query:** "total profit"
 
-![Introduction Snippet](docs/examples/introduction_snippet.png)
+![Total Profit Snippet](docs/examples/total_profit_snippet.png)
 
-*SnipRAG can help navigate to specific sections of a document based on semantic understanding of the content.*
+*For financial documents, seeing the numbers in their original tabular format provides critical context that would be lost in pure text extraction.*
+
+### Technical Comparison Charts
+
+**Query:** "technical components comparison"
+
+![Technical Comparison Snippet](docs/examples/tech_comparison_snippet.png)
+
+*Complex comparison tables maintain their structure in the extracted snippets, making it easier to understand the relationships between different items.*
 
 > Note: To generate these snippets yourself, run the basic demo with a sample PDF as shown in the Demos section below.
 
