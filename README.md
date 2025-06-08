@@ -43,6 +43,20 @@ For visualization support (recommended for demos):
 pip install -e ".[viz]"
 ```
 
+### From GitHub
+
+You can install directly from GitHub using pip:
+
+```bash
+pip install git+https://github.com/ishandikshit/SnipRAG.git
+```
+
+For visualization support (recommended for demos):
+
+```bash
+pip install "git+https://github.com/ishandikshit/SnipRAG.git#egg=sniprag[viz]"
+```
+
 ## Quick Start
 
 ```python
