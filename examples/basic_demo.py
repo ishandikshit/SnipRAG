@@ -21,6 +21,8 @@ def display_results(results):
     """Display search results with image snippets."""
     # Set up matplotlib figure for displaying images
     n_results = len(results)
+    print("Results:")
+    print(results)
     if n_results == 0:
         print("No results found.")
         return

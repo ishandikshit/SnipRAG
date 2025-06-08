@@ -1,7 +1,5 @@
 """
-SnipRAG Engine - Retrieval Augmented Generation with image snippets from PDFs.
-This module enables semantic searching of PDF documents and returns
-relevant image snippets from the areas containing matching text.
+SnipRAG Base Engine - Common functionality for all SnipRAG engines.
 """
 
 import os
@@ -22,14 +20,15 @@ from langchain.docstore.document import Document
 
 logger = logging.getLogger(__name__)
 
-class SnipRAGEngine:
+class BaseSnipRAGEngine:
     """
-    SnipRAG Engine that can return image snippets from PDFs based on semantic text search.
+    Base class for SnipRAG engines providing common functionality.
     """
     
-    def __init__(self, embedding_model_name: str = "all-MiniLM-L6-v2", aws_credentials: Optional[Dict[str, str]] = None):
+    def __init__(self, embedding_model_name: str = "all-MiniLM-L6-v2", 
+                 aws_credentials: Optional[Dict[str, str]] = None):
         """
-        Initialize the SnipRAG Engine.
+        Initialize the base SnipRAG Engine.
         
         Args:
             embedding_model_name: Name of the sentence-transformers model to use for embeddings
@@ -110,7 +109,7 @@ class SnipRAGEngine:
             True if successful, False otherwise
         """
         try:
-            # Extract text from PDF
+            # Extract text from PDF - this method will be implemented by subclasses
             chunks_with_metadata = self._extract_text_chunks(pdf_path, document_id)
             
             # Create embeddings and add to index
@@ -152,8 +151,7 @@ class SnipRAGEngine:
     
     def _extract_text_chunks(self, pdf_path: str, document_id: str) -> List[Tuple[str, Dict[str, Any]]]:
         """
-        Extract text chunks from a PDF with metadata including text coordinates.
-        Each page is split into 20 horizontal blocks with 20% overlap.
+        Extract text chunks from a PDF with metadata.
         
         Args:
             pdf_path: Path to the PDF file
@@ -162,89 +160,8 @@ class SnipRAGEngine:
         Returns:
             List of tuples (text_chunk, metadata)
         """
-        result = []
-        
-        # Open the PDF
-        doc = fitz.open(pdf_path)
-        
-        # Process each page
-        for page_idx in range(len(doc)):
-            page = doc[page_idx]
-            
-            # Store key for this page
-            page_key = f"{document_id}_{page_idx}"
-            
-            # Render the page to an image at 300 DPI and store it
-            pix = page.get_pixmap(matrix=fitz.Matrix(300/72, 300/72))
-            img_data = pix.tobytes("png")
-            self.page_images[page_key] = img_data
-            
-            # Get page dimensions
-            page_rect = page.rect
-            page_width = page_rect.width
-            page_height = page_rect.height
-            
-            # Calculate block height (1/20 of page height)
-            block_height = page_height / 20
-            overlap = block_height * 0.2  # 20% overlap
-            
-            # Extract whole page text
-            page_text = page.get_text()
-            
-            # Create 20 horizontal blocks with overlap
-            for block_idx in range(20):
-                # Calculate block coordinates
-                y0 = block_idx * block_height - overlap if block_idx > 0 else 0
-                y1 = (block_idx + 1) * block_height
-                
-                if y0 >= page_height:
-                    break
-                    
-                if y1 > page_height:
-                    y1 = page_height
-                
-                # Define block rectangle
-                block_rect = fitz.Rect(0, y0, page_width, y1)
-                
-                # Extract text from this region
-                block_text = page.get_text("text", clip=block_rect)
-                
-                if not block_text.strip():
-                    continue
-                
-                # Coordinates in format expected by the rest of the code (x0, y0, x1, y1)
-                coordinates = [0, y0, page_width, y1]
-                
-                # Scale coordinates to match the rendered image resolution
-                scale_factor = 300/72
-                scaled_coords = [c * scale_factor for c in coordinates]
-                
-                # Create metadata
-                metadata = {
-                    "document_id": document_id,
-                    "page_number": page_idx,
-                    "source": "pdf",
-                    "block_index": block_idx,
-                    "coordinates": scaled_coords
-                }
-                
-                # Create a document for langchain
-                langchain_doc = Document(
-                    page_content=block_text,
-                    metadata=metadata
-                )
-                
-                # Split the text into chunks
-                chunks = self.text_splitter.split_documents([langchain_doc])
-                
-                # Add each chunk with its metadata
-                for chunk in chunks:
-                    result.append((chunk.page_content, chunk.metadata))
-        
-        # Close the document
-        doc.close()
-        
-        return result
+        # To be implemented by subclasses
+        raise NotImplementedError("Subclasses must implement _extract_text_chunks")
     
     def _add_chunks_to_index(self, chunks_with_metadata: List[Tuple[str, Dict[str, Any]]]):
         """
@@ -273,7 +190,7 @@ class SnipRAGEngine:
         # Store text coordinates for later use in image extraction
         self.text_coordinates.extend([meta.get("coordinates", [0, 0, 0, 0]) 
                                     for _, meta in chunks_with_metadata])
-        
+    
     def get_image_snippet(self, result_idx: int, padding: int = None) -> Dict[str, Any]:
         """
         Extract an image snippet for a specific search result.
@@ -425,20 +342,40 @@ class SnipRAGEngine:
             
             # Find the matching document in our stored documents
             for idx, (text, metadata) in enumerate(zip(self.documents, self.document_metadata)):
-                if text == doc_text and metadata["page_number"] == doc_metadata["page_number"]:
+                if text == doc_text and metadata.get("page_number") == doc_metadata.get("page_number"):
+                    # Perform any additional matching needed by subclasses
+                    if not self._is_matching_document(metadata, doc_metadata):
+                        continue
+                    
                     # Get image snippet
                     snippet = self.get_image_snippet(idx, snippet_padding)
                     
                     # Add snippet data to result
                     if "error" not in snippet:
                         result["image_data"] = snippet["image_data"]
-                        result["coordinates"] = snippet["coordinates"]
+                        if "coordinates" in snippet:
+                            result["coordinates"] = snippet["coordinates"]
                     else:
                         result["image_error"] = snippet["error"]
                     
                     break
         
         return results
+    
+    def _is_matching_document(self, metadata1: Dict[str, Any], metadata2: Dict[str, Any]) -> bool:
+        """
+        Check if two document metadata entries refer to the same document.
+        This method can be overridden by subclasses to add additional matching criteria.
+        
+        Args:
+            metadata1: First metadata dictionary
+            metadata2: Second metadata dictionary
+            
+        Returns:
+            True if the metadata entries match, False otherwise
+        """
+        # Default implementation just checks page number
+        return metadata1.get("page_number") == metadata2.get("page_number")
         
     def clear_index(self):
         """Clear the index and all stored documents."""

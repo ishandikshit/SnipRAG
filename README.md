@@ -14,6 +14,7 @@ SnipRAG is a specialized Retrieval Augmented Generation (RAG) system that not on
 
 - **Semantic PDF Search**: Find information in PDF documents using natural language queries
 - **Image Snippet Extraction**: Get visual context from the exact regions containing relevant information
+- **Multiple Extraction Strategies**: Choose between semantic text extraction or OCR-based processing
 - **Precise Coordinate Mapping**: Maps text matches to their exact visual location in the document
 - **Customizable Snippet Size**: Adjust padding around text regions to control snippet size
 - **S3 Integration**: Process documents stored in Amazon S3
@@ -33,6 +34,18 @@ For visualization support (recommended for demos):
 pip install sniprag[viz]
 ```
 
+For OCR support:
+
+```bash
+pip install sniprag[ocr]
+```
+
+For all features:
+
+```bash
+pip install sniprag[all]
+```
+
 ### From Source
 
 ```bash
@@ -49,19 +62,22 @@ You can install directly from GitHub using pip:
 pip install git+https://github.com/ishandikshit/SnipRAG.git
 ```
 
-For visualization support (recommended for demos):
+For visualization and OCR support:
 
 ```bash
-pip install "git+https://github.com/ishandikshit/SnipRAG.git#egg=sniprag[viz]"
+pip install "git+https://github.com/ishandikshit/SnipRAG.git#egg=sniprag[all]"
 ```
 
 ## Quick Start
 
 ```python
-from sniprag import SnipRAGEngine
+from sniprag import create_engine
 
-# Initialize the engine
-engine = SnipRAGEngine()
+# Initialize the engine with semantic strategy (default)
+engine = create_engine("semantic", num_blocks=20, block_overlap=0.2)
+
+# Or use OCR-based strategy
+# engine = create_engine("ocr", num_slices=10, tesseract_cmd="/path/to/tesseract")
 
 # Process a PDF document
 engine.process_pdf("path/to/document.pdf", "document-id")
@@ -79,6 +95,36 @@ for result in results:
     if "image_data" in result:
         image_base64 = result["image_data"]
         # Use this to display or save the image
+```
+
+## Extraction Strategies
+
+SnipRAG offers two different text extraction strategies:
+
+### Semantic Strategy
+
+The semantic strategy uses PyMuPDF's built-in text extraction:
+
+- Divides each page into configurable horizontal blocks (default: 20)
+- Extracts text directly from the PDF structure
+- Works best with native digital PDFs
+- More precise for well-structured documents
+
+```python
+engine = create_engine("semantic", num_blocks=20, block_overlap=0.2)
+```
+
+### OCR Strategy
+
+The OCR strategy uses Tesseract OCR:
+
+- Divides each page into configurable horizontal slices (default: 10)
+- Performs OCR on each slice to extract text
+- Better for scanned documents or images
+- More resilient to poor quality documents
+
+```python
+engine = create_engine("ocr", num_slices=10, tesseract_cmd="/path/to/tesseract")
 ```
 
 ## Example Snippets
@@ -121,7 +167,16 @@ Here are some examples of SnipRAG in action, showing how it extracts image snipp
 
 ## Demos
 
-SnipRAG includes two demo applications:
+SnipRAG includes several demo applications:
+
+### Strategy Demo
+
+Compare different extraction strategies with a test document:
+
+```bash
+python demo_strategies.py --strategy semantic  # Default strategy
+python demo_strategies.py --strategy ocr --tesseract /path/to/tesseract
+```
 
 ### Basic Demo
 
@@ -155,7 +210,7 @@ This markdown file contains code snippets you can use in a Jupyter notebook to p
 SnipRAG combines semantic search with coordinate mapping to provide visual context:
 
 1. **PDF Processing**:
-   - Extracts text blocks with their coordinates
+   - Extracts text using the selected strategy (semantic or OCR)
    - Renders page images at high resolution
    - Creates text embeddings for semantic search
 
@@ -172,18 +227,52 @@ SnipRAG combines semantic search with coordinate mapping to provide visual conte
 
 ## API Reference
 
-### `SnipRAGEngine`
+### Factory Function
 
-Main class for the SnipRAG engine.
+The main entry point for creating SnipRAG engines.
 
 ```python
-engine = SnipRAGEngine(
+from sniprag import create_engine
+
+engine = create_engine(
+    strategy="semantic",  # "semantic" or "ocr"
+    **kwargs  # Strategy-specific parameters
+)
+```
+
+### `BaseSnipRAGEngine`
+
+Base class for all SnipRAG engines.
+
+### `SemanticSnipRAGEngine`
+
+Engine that uses PyMuPDF's text extraction.
+
+```python
+engine = create_engine(
+    "semantic",
+    num_blocks=20,  # Number of horizontal blocks per page
+    block_overlap=0.2,  # Overlap between blocks (0.0-1.0)
     embedding_model_name="all-MiniLM-L6-v2",  # Model for text embeddings
     aws_credentials=None  # Optional AWS credentials for S3 access
 )
 ```
 
-#### Methods
+### `OCRSnipRAGEngine`
+
+Engine that uses Tesseract OCR for text extraction.
+
+```python
+engine = create_engine(
+    "ocr",
+    num_slices=10,  # Number of horizontal slices per page
+    tesseract_cmd="/path/to/tesseract",  # Path to Tesseract executable
+    embedding_model_name="all-MiniLM-L6-v2",  # Model for text embeddings
+    aws_credentials=None  # Optional AWS credentials for S3 access
+)
+```
+
+#### Common Methods
 
 - **`process_pdf(pdf_path, document_id)`**: Process a local PDF file
 - **`process_document_from_s3(s3_uri, document_id)`**: Process a PDF from S3
@@ -201,6 +290,7 @@ SnipRAG is particularly valuable for:
 - **Technical Documentation**: Locate diagrams, tables, and code snippets
 - **Research Papers**: Find equations, figures, and important text
 - **Medical Records**: Identify specific sections, charts, or results
+- **Scanned Documents**: Process historical or legacy documents with OCR capabilities
 
 ## Requirements
 
@@ -213,6 +303,7 @@ SnipRAG is particularly valuable for:
   - numpy
   - boto3 (for S3 integration)
   - langchain (for text splitting)
+  - pytesseract (for OCR support)
   - matplotlib (for visualization, optional)
 
 ## Contributing
@@ -232,4 +323,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Acknowledgements
 
 - This project was inspired by the need for more precise visual context in RAG systems
-- Thanks to the developers of PyMuPDF, sentence-transformers, and FAISS for their excellent libraries 
+- Thanks to the developers of PyMuPDF, sentence-transformers, FAISS, and Tesseract for their excellent libraries 

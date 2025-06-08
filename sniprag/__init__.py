@@ -1,10 +1,7 @@
 """
-SnipRAG - Retrieval Augmented Generation with Image Snippets
-===========================================================
-
-SnipRAG is a RAG system that returns image snippets from PDFs based on semantic search queries.
+SnipRAG - Retrieval Augmented Generation with image snippets from PDFs.
 """
 
-from sniprag.core.engine import SnipRAGEngine
+from sniprag.core import create_engine, BaseSnipRAGEngine, SemanticSnipRAGEngine, OCRSnipRAGEngine
 
 __version__ = "0.1.0" 
